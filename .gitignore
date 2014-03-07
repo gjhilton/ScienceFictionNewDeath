@@ -1,0 +1,9 @@
+*.xcworkspacedata
+*.xcuserstate
+Giles/Giles.xcodeproj/xcuserdata/gjh.xcuserdatad/xcschemes/xcschememanagement.plist
+
+Giles/bin/GilesDebug.app/*
+*.otf
+*.xcscheme
+
+*.wav
