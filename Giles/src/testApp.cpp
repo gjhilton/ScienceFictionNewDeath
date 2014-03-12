@@ -1,52 +1,129 @@
 #include "testApp.h"
 
-#define SERIAL_BAUD_RATE 9600
-#define VERSION 0.1
+#define VERSION 0.2
+
+/////////////////////////////////////////////////////////////////////////////////////////////////
+// OF LIFECYCLE
+////////////////////////////////////////////////////////////////////////////////////////////////
 
 void testApp::setup(){
-
-	// init audio
-	bleep.loadSound("bleep.wav");
-	bleep.setVolume(0.75f);
-
-	// init graphics
-	ofBackground(0);
-	font.loadFont("DIN.otf", 11);
-	title = "GILES (v" + ofToString(VERSION) + ") is watching ";
-
-	// init serial
-	vector <ofSerialDeviceInfo> deviceList = serial.getDeviceList();
-	int baud = SERIAL_BAUD_RATE;
-	serial.setup(0, baud);
-	title += deviceList[0].getDeviceName();
-
-
+	setupConsole();
+	setupAudio();
+	setupUI();
+	setupSerial();
 }
 
 void testApp::update(){
-	int nBytesRead = 0;
-	int nRead  = 0;  // a temp variable to keep count per read
-	char bytesReadString[4];
-	unsigned char bytesReturned[3];
-
-	memset(bytesReadString, 0, 4);
-	memset(bytesReturned, 0, 3);
-
-	while( (nRead = serial.readBytes( bytesReturned, 3)) > 0){
-		nBytesRead = nRead;
-	};
-
-	memcpy(bytesReadString, bytesReturned, 3);
-	if (nBytesRead > 0){
-		string s;
-		s = ofToString(bytesReadString);
-		cout << "GOT: " << s << endl;
-		bleep.play();
-	}
-
+	updateSerial();
 	ofSoundUpdate();
 }
 
 void testApp::draw(){
 	font.drawString(title, 10, 20);
+	font.drawString(consoleToString(), 10, 36);
+}
+
+/////////////////////////////////////////////////////////////////////////////////////////////////
+// CONSOLE
+////////////////////////////////////////////////////////////////////////////////////////////////
+
+void testApp::setupConsole(){
+	for (int i=0; i< CONSOLE_NLINES; i++){
+		console[i] = "";
+	}
+}
+
+void testApp::appendToConsole(string s){
+	for (int i=CONSOLE_NLINES-1; i>0; i--){
+		console[i] = console[i-1];
+	}
+	// escape newlines in input
+	ofStringReplace(s, "\n", "\\n");
+	// not a very efficient way to build the string
+	console[0] = ofToString(ofGetHours()) + ":" + ofToString(ofGetMinutes()) + ":" + ofToString(ofGetSeconds()) + " " + s;
+}
+
+string testApp::consoleToString(){
+	string s;
+	for (int i=0; i< CONSOLE_NLINES; i++){
+		s += "\n" + console[i];
+	}
+	return s;
+}
+
+/////////////////////////////////////////////////////////////////////////////////////////////////
+// UI
+////////////////////////////////////////////////////////////////////////////////////////////////
+
+void testApp::setupUI(){
+	ofBackground(0);
+	font.loadFont("DIN.otf", 11);
+}
+
+/////////////////////////////////////////////////////////////////////////////////////////////////
+// AUDIO
+////////////////////////////////////////////////////////////////////////////////////////////////
+
+void testApp::setupAudio(){
+	bleep.loadSound("bleep.wav");
+	bleep.setVolume(0.75f);
+}
+
+/////////////////////////////////////////////////////////////////////////////////////////////////
+// SERIAL COMMS
+////////////////////////////////////////////////////////////////////////////////////////////////
+
+void testApp::setupSerial(){
+	isConnected = false;
+	vector <ofSerialDeviceInfo> deviceList = serial.getDeviceList();
+	string serialDeviceName = deviceList[0].getDeviceName();
+	if (!ofIsStringInString(serialDeviceName,"Bluetooth")){
+		isConnected = serial.setup(0, SERIAL_BAUD_RATE);
+	}
+	if (isConnected){
+		title = "GILES (v" + ofToString(VERSION) + ") is watching " + serialDeviceName + " [" + ofToString(SERIAL_BAUD_RATE) + " baud]";
+	} else {
+		string allDevices;
+		for(int k = 0; k < (int)deviceList.size(); k++){
+			allDevices += "\n - " + deviceList[k].getDeviceName();
+		}
+		title = "Help! I'm not connected to anything.\nNone of these ports taste like Arduino:\n" + allDevices + "\n\nCheck connections? Restart me? Turn everything off then on again?";
+		ofSetColor(255,0,0);
+	}
+}
+
+void testApp::updateSerial(){
+	if (isConnected){
+		static vector<unsigned char> bytesToProcess;
+		int bytesToRead = serial.available();
+		if (bytesToRead>0) {
+			bytesToProcess.resize(bytesToRead);
+			serial.readBytes(&bytesToProcess[0], bytesToRead);
+			for (int i = 0; i < bytesToRead; i++) {
+				processSerialData((char)(bytesToProcess[i]));
+			}
+		}
+	}
+}
+
+void testApp::processSerialData(unsigned char inputData){
+	string input = ofToString(inputData);
+	if (
+		(input!= "\r") &&	// arduino Serial.println sends str + \r\n -- ignore carriage return
+		(inputData < 127)	// for some reason, high ascii junk sometimes get randomly sent at startup
+	){
+		if (input == "\n"){ // use \n to terminate command string
+			handleSerialCommand(buffer);
+			buffer = "";
+		} else {
+			buffer = buffer + input;
+		}
+	}
+}
+
+void testApp::handleSerialCommand(string command){
+	appendToConsole("rx: " + command);
+	if (command == "TRIGGERED"){
+		bleep.play(); // for example
+	}
 }
