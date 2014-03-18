@@ -7,3 +7,5 @@ Giles/bin/GilesDebug.app/*
 *.xcscheme
 
 *.wav
+
+.DS_Store

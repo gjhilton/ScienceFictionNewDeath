@@ -1,6 +1,6 @@
 #include "testApp.h"
 
-#define VERSION 0.2
+#define VERSION 0.3
 
 /////////////////////////////////////////////////////////////////////////////////////////////////
 // OF LIFECYCLE
@@ -65,8 +65,11 @@ void testApp::setupUI(){
 ////////////////////////////////////////////////////////////////////////////////////////////////
 
 void testApp::setupAudio(){
-	bleep.loadSound("bleep.wav");
-	bleep.setVolume(0.75f);
+	loop.loadSound("loop.wav");
+	loop.setVolume(0.75f);
+	loop.setLoop(true);
+	release.loadSound("release.wav");
+	release.setVolume(0.75f);
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////////////
@@ -123,7 +126,16 @@ void testApp::processSerialData(unsigned char inputData){
 
 void testApp::handleSerialCommand(string command){
 	appendToConsole("rx: " + command);
-	if (command == "TRIGGERED"){
-		bleep.play(); // for example
+	if (command == "TRIGGER"){
+		if (release.getIsPlaying()){
+			release.stop();
+		}
+		loop.play();
+	}
+	if (command == "RELAX"){
+		if (loop.getIsPlaying()){
+			loop.stop();
+		}
+		release.play();
 	}
 }

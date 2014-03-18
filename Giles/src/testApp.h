@@ -26,7 +26,8 @@ class testApp : public ofBaseApp{
 
 		ofTrueTypeFont font;
 		ofSerial serial;
-		ofSoundPlayer bleep;
+		ofSoundPlayer loop;
+		ofSoundPlayer release;
 
 		string buffer="";
 		string title;
