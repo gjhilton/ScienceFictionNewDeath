@@ -9,3 +9,5 @@ Giles/bin/GilesDebug.app/*
 *.wav
 
 .DS_Store
+
+*.mp3

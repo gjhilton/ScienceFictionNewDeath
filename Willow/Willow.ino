@@ -8,21 +8,21 @@
 // CONFIGURATION
 ////////////////////////////////////////////////////////////////////////////////////////////////
 
-#define PING_PIN 5 //13
-#define RANGE_NEAR 50
-#define RANGE_FAR 300
-// #define SENSOR_CALIBRATION_MODE // uncomment to enable calibration | comment to run normally
+int CHASE_PINS[] = {15,14,9,8,17,16,7,4,3,2};
+
+#define PING_PIN 13
+#define RANGE_NEAR 76
+#define RANGE_FAR 80
 
 #define DRYER_PIN 18
 #define FAN_PIN_LEFT 11
 #define FAN_PIN_RIGHT 10
 
-#define HERO_LIGHT_PIN 5
+#define HERO_LIGHT_PIN 6
 #define HERO_LIGHT_FLASH_DURATION_MS 0
-#define HERO_LIGHT_FADE_DURATION_MS 5000
+#define HERO_LIGHT_FADE_DURATION_MS 1000
 
 #define SERIAL_BAUD 57600
-
 
 /////////////////////////////////////////////////////////////////////////////////////////////////
 // DECLARATIONS
@@ -41,21 +41,20 @@ FanChannel fans(FAN_PIN_LEFT,FAN_PIN_RIGHT);
 void setup() {
   Serial.begin(SERIAL_BAUD);
   motiontrigger.begin(&onTrigger,&onDetrigger);
-  /*
   herolight.begin();
   dryer.begin();
+  for (int i=0; i<10; i++){
+    int pin = CHASE_PINS[i];
+    chase.addPinAtIndex(pin,i);
+  }
   chase.begin();
-  fans.begin();
-  */
 }
 
 void loop() {
   motiontrigger.loop();
-  /*
   chase.loop();
   herolight.loop();
-  fans.loop();
-  */
+  delay(5);
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////////////
@@ -66,11 +65,16 @@ void onTrigger(){
   Serial.println("TRIGGER");
   herolight.on();
   dryer.on();
+  fans.on();
+  chase.stopChase();
+  // chase.allOn();
 }
 
 void onDetrigger(){
   Serial.println("RELAX");
-  herolight.reset();
+  herolight.cue();
   dryer.off();
+  fans.off();
+  chase.startChase();
 }
 

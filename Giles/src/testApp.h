@@ -26,6 +26,7 @@ class testApp : public ofBaseApp{
 
 		ofTrueTypeFont font;
 		ofSerial serial;
+		ofSoundPlayer trigger;
 		ofSoundPlayer loop;
 		ofSoundPlayer release;
 

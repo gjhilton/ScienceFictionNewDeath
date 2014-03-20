@@ -15,6 +15,7 @@ public:
 private:
 	
 	int pin;
+	bool isON;
 
 };
 

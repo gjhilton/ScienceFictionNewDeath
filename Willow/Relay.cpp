@@ -19,9 +19,13 @@ void Relay::begin(){
 ////////////////////////////////////////////////////////////////////////////////////////////////
 
 void Relay::on(){
-	digitalWrite(pin, LOW);
+	if (! isON){
+		digitalWrite(pin, LOW);
+		isON = true;
+	}
 }
 
 void Relay::off(){
 	digitalWrite(pin, HIGH);
+	isON = false;
 }

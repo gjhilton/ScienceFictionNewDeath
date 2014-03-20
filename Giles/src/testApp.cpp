@@ -65,10 +65,12 @@ void testApp::setupUI(){
 ////////////////////////////////////////////////////////////////////////////////////////////////
 
 void testApp::setupAudio(){
-	loop.loadSound("loop.wav");
+	trigger.loadSound("start.mp3");
+	trigger.setVolume(0.75f);
+	loop.loadSound("loop.mp3");
 	loop.setVolume(0.75f);
 	loop.setLoop(true);
-	release.loadSound("release.wav");
+	release.loadSound("release.mp3");
 	release.setVolume(0.75f);
 }
 
@@ -130,6 +132,7 @@ void testApp::handleSerialCommand(string command){
 		if (release.getIsPlaying()){
 			release.stop();
 		}
+		trigger.play();
 		loop.play();
 	}
 	if (command == "RELAX"){

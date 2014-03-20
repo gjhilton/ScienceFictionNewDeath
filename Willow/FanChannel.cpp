@@ -25,11 +25,14 @@ void FanChannel::loop(){
 ////////////////////////////////////////////////////////////////////////////////////////////////
 
 void FanChannel::on(){
-	digitalWrite(pinLeft, HIGH);
-	digitalWrite(pinRight, HIGH);
+	setSpeed(255);
 }
 
 void FanChannel::off(){
-	digitalWrite(pinRight, LOW);
-	digitalWrite(pinRight, LOW);
+	setSpeed(0);
+}
+
+void FanChannel::setSpeed(int speed){
+	analogWrite(pinRight, speed);
+	analogWrite(pinLeft, speed);
 }

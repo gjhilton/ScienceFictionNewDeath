@@ -3,8 +3,9 @@
 
 #include "Arduino.h"
 
-#define SENSOR_READ_INTERVAL_MS 30
-#define NODETECT_INTERVAL_BEFORE_RELAX_MS 1000
+// #define SENSOR_CALIBRATION_MODE // uncomment to enable calibration | comment to run normally
+#define SENSOR_READ_INTERVAL_MS 20
+#define NODETECT_INTERVAL_BEFORE_RELAX_MS 500
 
 typedef void (*CallbackFunc)();
 
@@ -12,7 +13,6 @@ enum TriggerStatus {
   TRIGGER_STATUS_IDLE,
   TRIGGER_STATUS_TRIGGERED
 };
-
 
 class MotionTrigger{
 

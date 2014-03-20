@@ -6,7 +6,7 @@ MotionTrigger::MotionTrigger(int _pin, int near, int far){
 	triggerThresholdNearCM = near;
 	triggerThresholdFarCM = far;
 
-	#ifdef CALIBRATION_MODE
+	#ifdef SENSOR_CALIBRATION_MODE
 
 	minDistance = 1000;
 	maxDistance = 0;
@@ -19,7 +19,7 @@ MotionTrigger::MotionTrigger(int _pin, int near, int far){
 ////////////////////////////////////////////////////////////////////////////////////////////////
 
 void MotionTrigger::begin(CallbackFunc _triggerfunc,CallbackFunc _relaxfunc){
-	#ifdef CALIBRATION_MODE
+	#ifdef SENSOR_CALIBRATION_MODE
 		Serial.println("SENSOR CALIBRATION MODE");
 	#else
 		setTriggerCallback(_triggerfunc);
@@ -64,7 +64,7 @@ void MotionTrigger::setRelaxCallback(CallbackFunc _func){
 // PRIVATE IMPLEMENTATION
 ////////////////////////////////////////////////////////////////////////////////////////////////
 
-#ifdef CALIBRATION_MODE
+#ifdef SENSOR_CALIBRATION_MODE
 
 // in calibration mode, we just print the range to the serial device
 
@@ -95,16 +95,18 @@ void MotionTrigger::updateState(){
 		case TRIGGER_STATUS_IDLE:
 		  if (personDetected()){
 			trigger();
-			//Serial.print("trigger becaue distance = ");
+			//Serial.print("trigger because distance = ");
 			//Serial.println(lastDistance);
 		  }
 		  break;
 		case TRIGGER_STATUS_TRIGGERED:
 		  if (personDetected()){
 			 startResetTimer();
-			 //Serial.print("reset becaue distance = ");
+			 //Serial.print("reset because distance = ");
 			 //Serial.println(lastDistance);
 		  } else {
+		  	//Serial.print("nobody there because distance = ");
+			//Serial.println(lastDistance);
 			if ((millis() - lastDetectTime) > NODETECT_INTERVAL_BEFORE_RELAX_MS) {
 			  relax();
 			}
@@ -112,7 +114,6 @@ void MotionTrigger::updateState(){
 		  break;
 	  } 
 }
-
 
 #endif
 
@@ -131,6 +132,9 @@ boolean MotionTrigger::personDetected(){
 	unsigned long duration = pulseIn(pin, HIGH);
 	unsigned long distance = microsecondsToCentimetres(duration);
 	lastDistance = distance;
+	if (distance <= 0){  // this is an erroneous reading - ignore it
+		return false;
+	}
 	if ((distance < triggerThresholdNearCM) || (distance > triggerThresholdFarCM)) {
 		return true;
 	}

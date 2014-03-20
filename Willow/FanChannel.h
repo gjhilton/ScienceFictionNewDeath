@@ -18,6 +18,8 @@ private:
 	int pinLeft;
 	int pinRight;
 
+	void setSpeed(int speed);
+
 };
 
 #endif
