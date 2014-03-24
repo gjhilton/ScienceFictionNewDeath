@@ -3,7 +3,10 @@
 
 #include "Arduino.h"
 
+#define MOTION_TRIGGER_VERSION 1.1
+
 // #define SENSOR_CALIBRATION_MODE // uncomment to enable calibration | comment to run normally
+// #define SENSOR_VERBOSE_MODE // uncomment to enable debugging serial output | comment to run normally
 #define SENSOR_READ_INTERVAL_MS 20
 #define NODETECT_INTERVAL_BEFORE_RELAX_MS 500
 

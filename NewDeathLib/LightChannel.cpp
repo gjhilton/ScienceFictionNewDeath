@@ -41,6 +41,7 @@ void LightChannel::cue(){
 }
 
 void LightChannel::on(){
+	setState(CHANNEL_STATE_OFF); // this is counterintuiitive. TODO: rename
 	setBrightness(255);
 }
 

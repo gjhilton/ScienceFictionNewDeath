@@ -19,6 +19,9 @@ MotionTrigger::MotionTrigger(int _pin, int near, int far){
 ////////////////////////////////////////////////////////////////////////////////////////////////
 
 void MotionTrigger::begin(CallbackFunc _triggerfunc,CallbackFunc _relaxfunc){
+	#ifdef SENSOR_VERBOSE_MODE
+		Serial.println("SENSOR VERBOSE MODE");
+	#endif
 	#ifdef SENSOR_CALIBRATION_MODE
 		Serial.println("SENSOR CALIBRATION MODE");
 	#else
@@ -95,18 +98,24 @@ void MotionTrigger::updateState(){
 		case TRIGGER_STATUS_IDLE:
 		  if (personDetected()){
 			trigger();
-			//Serial.print("trigger because distance = ");
-			//Serial.println(lastDistance);
+#ifdef SENSOR_VERBOSE_MODE
+			Serial.print("trigger because distance = ");
+			Serial.println(lastDistance);
+#endif
 		  }
 		  break;
 		case TRIGGER_STATUS_TRIGGERED:
 		  if (personDetected()){
 			 startResetTimer();
-			 //Serial.print("reset because distance = ");
-			 //Serial.println(lastDistance);
+#ifdef SENSOR_VERBOSE_MODE
+			 Serial.print("reset because distance = ");
+			 Serial.println(lastDistance);
+#endif
 		  } else {
-		  	//Serial.print("nobody there because distance = ");
-			//Serial.println(lastDistance);
+#ifdef SENSOR_VERBOSE_MODE
+		  	Serial.print("nobody there because distance = ");
+			Serial.println(lastDistance);
+#endif
 			if ((millis() - lastDetectTime) > NODETECT_INTERVAL_BEFORE_RELAX_MS) {
 			  relax();
 			}
@@ -133,6 +142,9 @@ boolean MotionTrigger::personDetected(){
 	unsigned long distance = microsecondsToCentimetres(duration);
 	lastDistance = distance;
 	if (distance <= 0){  // this is an erroneous reading - ignore it
+		#ifdef SENSOR_VERBOSE_MODE
+			 Serial.println("Error: distance 0 ");
+		#endif
 		return false;
 	}
 	if ((distance < triggerThresholdNearCM) || (distance > triggerThresholdFarCM)) {

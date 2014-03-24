@@ -1,13 +1,13 @@
 *.xcworkspacedata
 *.xcuserstate
-Giles/Giles.xcodeproj/xcuserdata/gjh.xcuserdatad/xcschemes/xcschememanagement.plist
-
-Giles/bin/GilesDebug.app/*
-*.otf
+*.xcbkptlist
 *.xcscheme
 
+*.otf
 *.wav
+*.mp3
 
 .DS_Store
 
-*.mp3
+MacClientGallery1Entry/bin/GilesDebug.app/*
+MacClientGallery1Entry/Giles.xcodeproj/xcuserdata/*

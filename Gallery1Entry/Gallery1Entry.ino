@@ -1,8 +1,9 @@
-#include "FanChannel.h"
-#include "LightChannel.h"
-#include "LightChase.h"
-#include "Relay.h"
-#include "MotionTrigger.h"
+#include <FanChannel.h>
+#include <interpolation.h>
+#include <LightChannel.h>
+#include <LightChase.h>
+#include <MotionTrigger.h>
+#include <Relay.h>
 
 /////////////////////////////////////////////////////////////////////////////////////////////////
 // CONFIGURATION
@@ -11,8 +12,8 @@
 int CHASE_PINS[] = {15,14,9,8,17,16,7,4,3,2};
 
 #define PING_PIN 13
-#define RANGE_NEAR 76
-#define RANGE_FAR 80
+#define RANGE_NEAR 79
+#define RANGE_FAR 82
 
 #define DRYER_PIN 18
 #define FAN_PIN_LEFT 11
@@ -43,11 +44,13 @@ void setup() {
   motiontrigger.begin(&onTrigger,&onDetrigger);
   herolight.begin();
   dryer.begin();
+  
   for (int i=0; i<10; i++){
     int pin = CHASE_PINS[i];
     chase.addPinAtIndex(pin,i);
   }
   chase.begin();
+  
 }
 
 void loop() {
@@ -67,7 +70,7 @@ void onTrigger(){
   dryer.on();
   fans.on();
   chase.stopChase();
-  // chase.allOn();
+  chase.allOn();
 }
 
 void onDetrigger(){

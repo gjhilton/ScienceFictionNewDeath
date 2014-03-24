@@ -11,7 +11,7 @@ Relay::Relay(int _pin){
 
 void Relay::begin(){
 	pinMode(pin, OUTPUT);
-	off();
+	isON = false;
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////////////
@@ -22,10 +22,19 @@ void Relay::on(){
 	if (! isON){
 		digitalWrite(pin, LOW);
 		isON = true;
+#ifdef RELAY_LOG_MODE
+		Serial.print("Relay ON at t= ");
+		Serial.println(millis());
+#endif
 	}
 }
 
 void Relay::off(){
 	digitalWrite(pin, HIGH);
 	isON = false;
+#ifdef RELAY_LOG_MODE
+		Serial.print("Relay off at t= ");
+		Serial.println(millis());
+#endif
+		delay(200);
 }
